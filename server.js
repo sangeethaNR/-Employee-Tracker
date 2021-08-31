@@ -66,7 +66,8 @@ function init()
                     UpdateEmployeeRole();
                     break;
         case  'View All Roles':
-                    ViewRoles();
+            viewRoles();
+                  
                     break;
                 case   'Add Role':
                     addRoles();
@@ -138,13 +139,20 @@ function addEmployee(){
             name: 'empManager', 
             choices :managers,
             validate :(value) => {if(value) return true; else return `Please select   to continue` }
-          }
-        //    .then(function(response){
+          }]).then(function(res){
+            var sql = "INSERT INTO employee(first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)";  
+            var value = [res.empFirstName,res.empLastName,res.empRole,1];
+           
+            dbConnection.query(sql, [value], function (err, result) {  
+            if (err) throw err;  
+            console.log("Number of records inserted: " + result.affectedRows);  
+            });  
+          
 
          
-        //   })
+       })
 
-    ])
+    
 })
   //})
 }
@@ -167,7 +175,21 @@ dbConnection.query(`SELECT * FROM employee`, async (err, results) => {
         });
         
 }
-// class Employee{
+function viewDepartment()
+{
+    dbConnection.query("SELECT * FROM department",
+    function (err, results) {
+      if (err) throw err
+      console.table(results)
+      init();
+    })
+}
+function viewRoles(){
 
-//     constructor(role,)
-// }
+    dbConnection.query('SELECT title  FROM roles',  function (err, results) {
+        if (err) throw err
+        console.table(results)
+        init();
+      
+      });
+}
