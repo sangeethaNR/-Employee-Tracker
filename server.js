@@ -77,7 +77,7 @@ function init()
                     viewDepartment();
                     break;
                 case    'Add Departments':
-                    addDepartments();
+                    addDepartment();
                     break;
         }
     }) ;
@@ -92,7 +92,17 @@ function viewEmployee(){
       init();
     })
 };
-
+function addDepartment()
+{
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: "What is the employee's first name?",
+            name: 'empFirstName',
+            validate :(value) => {if(value) return true; else return `Please enter employee's first name  to continue` }
+          }
+    ])
+}
 //add Employee function
 
 function addEmployee(){
@@ -155,6 +165,57 @@ function addEmployee(){
     
 })
   //})
+}
+function UpdateEmployeeRole(){ //1
+    let selectedEmp ;
+    dbConnection.query(`SELECT * FROM employee`, (err, response) => { //2 })
+        if (err) throw err;
+    
+        const employeeList = response.map(({
+          id,
+          first_name,
+          last_name
+        }) => ({
+          name: first_name + " " + last_name,
+          value: id
+        }));
+        inquirer.prompt([{
+            type: 'list',
+            name: 'empName',
+            message: "Select an Employee to Update their Role",
+            choices: employeeList
+          }]).then(function(res){  // 3 })
+ selectedEmp =res.empName;
+dbConnection.query(`SELECT * FROM roles`, (err, response) => { // 4 })
+    if (err) throw err;
+
+    const roles = response.map(({
+      id,
+      title
+    }) => ({
+      name: title,
+      value: id
+    }));
+
+  inquirer.prompt([{
+    type: 'list',
+    name: 'role',
+    message: "Select a new Role?",
+    choices: roles
+  }]).then(function(res){  //5})
+      console.log('role:' + res.role);
+      console.log('select employee:' + selectedEmp)
+    dbConnection.query(`UPDATE employee SET role_id = ? WHERE id = ?`,[res.role, selectedEmp],(err, result) => {
+        if (err) throw err;
+        console.log("Employee Role Update");
+        init();
+
+  });
+  });
+
+          });
+        });
+    });
 }
 function getEmployeeManager()
 {
