@@ -2,6 +2,9 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 require("console.table");
 require('dotenv').config();
+const express = require('express');
+const { response } = require("express");
+const app = express();
 
 var dbConnection = mysql.createConnection({
   host: "localhost",
@@ -15,7 +18,23 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
-init();
+const roles =[];
+
+getRoles();
+ function  getRoles()
+{
+
+    dbConnection.query('SELECT title  FROM roles', function (err, results) {
+        //console.log(results);
+        Object.keys(results).forEach(function(key) {
+            var row = results[key];
+            roles.push(row.title)
+          });
+         // console.log(roles)
+        init();
+      });
+   
+}
 
 function init()
 {
@@ -65,7 +84,7 @@ function init()
 
 function viewEmployee(){
 
-    db.query("SELECT * FROM employee",
+    dbConnection.query("SELECT * FROM employee",
     function (err, results) {
       if (err) throw err
       console.table(results)
@@ -73,3 +92,82 @@ function viewEmployee(){
     })
 };
 
+//add Employee function
+
+function addEmployee(){
+    
+
+//     Object.keys(results).forEach(function(key) {
+//         var row = results[key];
+//         roles.push(row.title)
+
+    dbConnection.query(`SELECT * FROM employee `, async (err, results) => {
+      if (err) throw err;
+      const managers = await results.map(({
+       id,
+        first_name,
+        last_name       
+      }) => ({
+        name: first_name +`\t`+ last_name,
+        value: id
+      }));
+   
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: "What is the employee's first name?",
+            name: 'empFirstName',
+            validate :(value) => {if(value) return true; else return `Please enter employee's first name  to continue` }
+          },
+          {
+            type: 'input',
+            message: "What is the employee's last name?",
+            name: 'empLastName',
+            validate :(value) => {if(value) return true; else return `Please enter employee's last name  to continue` }
+          },
+          {
+            type: 'list',
+            message: "What is the employee's role?",
+            name: 'empRole',
+            choices:roles,
+            validate :(value) => {if(value) return true; else return `Please select role to continue` }
+           },
+           {
+            type: 'list',
+            message: "Who  is the employee's Manager?",
+            name: 'empManager', 
+            choices :managers,
+            validate :(value) => {if(value) return true; else return `Please select   to continue` }
+          }
+        //    .then(function(response){
+
+         
+        //   })
+
+    ])
+})
+  //})
+}
+function getEmployeeManager()
+{
+//const managers4Role = ['None'];
+dbConnection.query(`SELECT * FROM employee`, async (err, results) => {
+    if (err) throw err;
+    const managers = await results.map(({
+        id,
+        first_name,
+      last_name
+      
+    }) => ({
+      name: first_name + " " + last_name,
+      value: id
+    }));
+ 
+    return managers;
+        });
+        
+}
+// class Employee{
+
+//     constructor(role,)
+// }
