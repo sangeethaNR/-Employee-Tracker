@@ -111,7 +111,16 @@ function addEmployee(){
 //     Object.keys(results).forEach(function(key) {
 //         var row = results[key];
 //         roles.push(row.title)
-
+dbConnection.query(`SELECT * FROM roles `, async (err, results) => {
+    if (err) throw err;
+    const role = await results.map(({
+     id,
+      title     
+    }) => ({
+      name: title,
+      value: id
+    }));
+ 
     dbConnection.query(`SELECT * FROM employee `, async (err, results) => {
       if (err) throw err;
       const managers = await results.map(({
@@ -140,7 +149,7 @@ function addEmployee(){
             type: 'list',
             message: "What is the employee's role?",
             name: 'empRole',
-            choices:roles,
+            choices:role,
             validate :(value) => {if(value) return true; else return `Please select role to continue` }
            },
            {
@@ -150,19 +159,20 @@ function addEmployee(){
             choices :managers,
             validate :(value) => {if(value) return true; else return `Please select   to continue` }
           }]).then(function(res){
+              const name = res.empFirstName + "" + res.empLastName;
             var sql = "INSERT INTO employee(first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)";  
-            var value = [res.empFirstName,res.empLastName,res.empRole,1];
+            var value = [res.empFirstName,res.empLastName,res.empRole,res.empManager];
            
-            dbConnection.query(sql, [value], function (err, result) {  
+            dbConnection.query(sql, value, function (err, result) {  
             if (err) throw err;  
-            console.log("Number of records inserted: " + result.affectedRows);  
+            console.log("Successfully added " +name);  
             });  
           
 
          
        })
 
-    
+    })
 })
   //})
 }
