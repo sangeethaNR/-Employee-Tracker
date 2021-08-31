@@ -70,7 +70,7 @@ function init()
                   
                     break;
                 case   'Add Role':
-                    addRoles();
+                    addRole();
                     break;
                 
                 case 'View All Departments':
@@ -183,7 +183,8 @@ function UpdateEmployeeRole(){ //1
             type: 'list',
             name: 'empName',
             message: "Select an Employee to Update their Role",
-            choices: employeeList
+            choices: employeeList,
+            validate :(value) => {if(value) return true; else return `Please select   to continue` }
           }]).then(function(res){  // 3 })
  selectedEmp =res.empName;
 dbConnection.query(`SELECT * FROM roles`, (err, response) => { // 4 })
@@ -201,7 +202,8 @@ dbConnection.query(`SELECT * FROM roles`, (err, response) => { // 4 })
     type: 'list',
     name: 'role',
     message: "Select a new Role?",
-    choices: roles
+    choices: roles,
+    validate :(value) => {if(value) return true; else return `Please select  to continue` }
   }]).then(function(res){  //5})
       console.log('role:' + res.role);
       console.log('select employee:' + selectedEmp)
@@ -253,4 +255,45 @@ function viewRoles(){
         init();
       
       });
+}
+
+function addRole()
+{
+    const department = [];
+    dbConnection.query('SELECT *  FROM department', function (err, results) {
+        //console.log(results);
+         Object.keys(results).forEach(function(key) {
+            var row = results[key];
+            department.push(row.dept_name)
+          });
+         // console.log(roles)
+        
+      });
+    inquirer.prompt([{
+        type: 'input',
+        name: 'roleName',
+        message: "What is the name of the  Role?",
+        validate :(value) => {if(value) return true; else return `Please enter role to continue` }
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: "What is the salary of the  Role?",
+        validate :(value) => {if(value) return true; else return `Please enter salary to continue` }
+      },
+      {
+        type: 'list',
+        name: 'department',
+        message: "Which department does the role belong to?",
+        choices : department,
+        validate :(value) => {if(value) return true; else return `Please enter  to continue` }
+      }
+    ]).then(function(res){
+        dbConnection.query('INSERT INTO  roles SET title=?,salary=?,department_id=?' ,[res.roleName,res.salary,1] , function (err, results) {
+            if (err) throw err
+           
+            init();
+          
+          });   
+      })
 }
