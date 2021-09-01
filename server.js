@@ -6,6 +6,8 @@ const express = require('express');
 const { response } = require("express");
 const app = express();
 
+// connection to database
+
 var dbConnection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -21,6 +23,7 @@ app.use(express.urlencoded({
 const roles =[];
 
 getRoles();
+// fetch roles from db
  function  getRoles()
 {
 
@@ -35,6 +38,7 @@ getRoles();
       });
    
 }
+
 
 function init()
 {
@@ -243,25 +247,7 @@ dbConnection.query(`SELECT * FROM roles`, (err, response) => { // 4 })
         });
     });
 }
-function getEmployeeManager()
-{
-//const managers4Role = ['None'];
-dbConnection.query(`SELECT * FROM employee`, async (err, results) => {
-    if (err) throw err;
-    const managers = await results.map(({
-        id,
-        first_name,
-      last_name
-      
-    }) => ({
-      name: first_name + " " + last_name,
-      value: id
-    }));
- 
-    return managers;
-        });
-        
-}
+
 function viewDepartment()
 {
     dbConnection.query("SELECT * FROM department",
