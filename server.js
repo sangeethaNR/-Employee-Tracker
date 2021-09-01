@@ -50,7 +50,8 @@ function init()
             'View All Roles',
             'Add Role',
             'View All Departments',
-            'Add Departments'
+            'Add Departments',
+            'Exit'
         ]
 
 
@@ -79,6 +80,8 @@ function init()
                 case    'Add Departments':
                     addDepartment();
                     break;
+                    case "Exit":
+                      process.exit();
         }
     }) ;
 }
@@ -97,11 +100,21 @@ function addDepartment()
     inquirer.prompt([
         {
             type: 'input',
-            message: "What is the employee's first name?",
-            name: 'empFirstName',
-            validate :(value) => {if(value) return true; else return `Please enter employee's first name  to continue` }
-          }
-    ])
+            message: "What is the name of the department?",
+            name: 'departmentName',
+            validate :(value) => {if(value) return true; else return `Please enter   to continue` }
+          }]).then(function(res){
+            
+            var sql = "INSERT INTO department(dept_name) VALUES (?)";  
+            var value = [res.departmentName];
+           
+            dbConnection.query(sql, value, function (err, result) {  
+            if (err) throw err;  
+            console.log("Successfully added " +value);  
+            init();
+          })
+        })
+  
 }
 //add Employee function
 
@@ -166,6 +179,7 @@ dbConnection.query(`SELECT * FROM roles `, async (err, results) => {
             dbConnection.query(sql, value, function (err, result) {  
             if (err) throw err;  
             console.log("Successfully added " +name);  
+            init();
             });  
           
 
