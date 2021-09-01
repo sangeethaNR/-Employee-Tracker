@@ -1,10 +1,16 @@
+
+
+
 # Employee-Tracker
 ## Project Description
 
  An application to create interfaces that allow non-developers to easily view and interact with information stored in databases.
 These interfaces are called **content management systems (CMS)** to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
-<iframe src="https://drive.google.com/file/d/1crATE9NMyRU-DhVcVaNpm4dGFGcrjq_C/preview" width="640" height="480"></iframe>
+Walkthrough video of this application is given below
+
+https://user-images.githubusercontent.com/81266861/131619456-6944f25f-7a1b-4be8-b496-1a59b9161890.mp4
+
  ## Technologies Used
    JavaScript
   Node.js
